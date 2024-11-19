@@ -3,7 +3,7 @@ from app.database import engine, Base, AsyncSessionLocal
 from app.routes import router
 from app.crud import add_rates
 
-app = FastAPI()c
+app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
