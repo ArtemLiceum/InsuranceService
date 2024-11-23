@@ -14,3 +14,5 @@ class InsuranceRequest(BaseModel):
 class InsuranceResponse(BaseModel):
     insurance_cost: float
 
+class RateUpdate(BaseModel):
+    rate: float

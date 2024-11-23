@@ -8,4 +8,3 @@ class Rate(Base):
     date = Column(Date, index=True)
     cargo_type = Column(String, index=True)
     rate = Column(Float)
-
