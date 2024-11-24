@@ -1,10 +1,7 @@
-import os
-
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Rate
 from datetime import datetime
-from aiokafka import AIOKafkaProducer
 
 # Получение тарифа
 async def get_rate(db: AsyncSession, cargo_type: str, date: datetime):
@@ -26,6 +23,7 @@ async def add_rates(db: AsyncSession):
         db.add(rate)
     await db.commit()
 
+# Удаление тарифа по критериям
 async def delete_rate_by_criteria(db: AsyncSession, cargo_type: str, effective_date: datetime):
     query = select(Rate).where(Rate.cargo_type == cargo_type, Rate.date == effective_date)
     result = await db.execute(query)
@@ -35,11 +33,11 @@ async def delete_rate_by_criteria(db: AsyncSession, cargo_type: str, effective_d
         await db.commit()
     return rate
 
+# Редактирование тарифа
 async def update_rate(db: AsyncSession, cargo_type: str, effective_date: datetime, new_data: dict):
     query = await db.execute(
         select(Rate).where(Rate.cargo_type == cargo_type, Rate.date == effective_date)
     )
-
     rate = query.scalar_one_or_none()
 
     if not rate:
@@ -53,15 +51,3 @@ async def update_rate(db: AsyncSession, cargo_type: str, effective_date: datetim
     await db.commit()
     await db.refresh(rate)
     return rate
-
-kafka_producer = None
-
-async def init_kafka():
-    global kafka_producer
-    kafka_producer = AIOKafkaProducer(bootstrap_servers="kafka:9092")
-    await kafka_producer.start()
-
-async def close_kafka():
-    global kafka_producer
-    if kafka_producer:
-        await kafka_producer.stop()
